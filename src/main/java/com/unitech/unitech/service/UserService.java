@@ -8,6 +8,7 @@ import com.unitech.unitech.exception.UserAlreadyExistException;
 import com.unitech.unitech.exception.UserNotFoundException;
 import com.unitech.unitech.model.User;
 import com.unitech.unitech.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,13 +19,15 @@ public class UserService {
 
   private final UserRepository repository;
   private final UserToUserDtoConverter converter;
+  private final PasswordEncoder passwordEncoder;
 
   private final AuthenticationService authenticationService;
 
 
-    public UserService(UserRepository repository, UserToUserDtoConverter converter, AuthenticationService authenticationService) {
+    public UserService(UserRepository repository, UserToUserDtoConverter converter, PasswordEncoder passwordEncoder, AuthenticationService authenticationService) {
         this.repository = repository;
         this.converter = converter;
+        this.passwordEncoder = passwordEncoder;
         this.authenticationService = authenticationService;
     }
 
@@ -34,7 +37,7 @@ public class UserService {
                 request.getFirstName(),
                 request.getLastName(),
                 request.getPin(),
-                request.getPassword(),
+                passwordEncoder.encode(request.getPassword()),
                 LocalDateTime.now()
         );
 
