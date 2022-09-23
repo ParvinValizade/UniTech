@@ -18,13 +18,18 @@ jar {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '2.7.0'
-    implementation "org.springdoc:springdoc-openapi-ui:1.6.9"
-//    testImplementation group: 'com.h2database', name: 'h2', version: '2.1.210'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation group: 'org.springdoc',name: 'springdoc-openapi-ui',version: '1.6.9'
+
+    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
+    implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
+    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
     runtimeOnly  'com.h2database:h2'
     implementation group: 'org.modelmapper', name: 'modelmapper', version: '3.0.0'
 
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
 }
 
 tasks.named('test') {
