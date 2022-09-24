@@ -52,10 +52,6 @@ public class UserService {
         return converter.convert(repository.save(user));
     }
 
-    public UserDto findUser(String pin){
-        return converter.convert(findUserByPin(pin));
-    }
-
     public List<UserDto> findAllUsers(){
         return converter.convert(repository.findAll());
     }
@@ -63,6 +59,11 @@ public class UserService {
     public User findUserByPin(String pin){
         return repository.findByPin(pin)
                 .orElseThrow(()->new UserNotFoundException("User couldn't be found by following pin: "+pin));
+    }
+
+    protected User findUserById(String userId){
+        return repository.findById(userId)
+                .orElseThrow(()->new UserNotFoundException("User couldn't be found by following userId: "+userId));
     }
 
     private void checkUserAlreadyExistOrNot(String pin){

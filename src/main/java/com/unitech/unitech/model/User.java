@@ -5,6 +5,7 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -28,16 +29,17 @@ public class User {
 
     private LocalDateTime creationDate;
 
+    @OneToMany(mappedBy = "userId")
+    private Set<Account> accounts;
+
 
     public User() {
     }
 
     public User(String id, String firstName, String lastName, LocalDate birthDate,
-                City city,
-                String address,
-                String pin,
-                String password,
-                LocalDateTime creationDate) {
+                City city, String address, String pin, String password,
+                LocalDateTime creationDate,
+                Set<Account> accounts) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -47,10 +49,12 @@ public class User {
         this.pin = pin;
         this.password = password;
         this.creationDate = creationDate;
+        this.accounts = accounts;
     }
 
     public User(String firstName, String lastName, LocalDate birthDate,
-                City city, String address, String pin, String password, LocalDateTime creationDate) {
+                City city, String address, String pin, String password,
+                LocalDateTime creationDate) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.birthDate = birthDate;

@@ -29,4 +29,25 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(e.getMessage(),HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(AccountNotFoundException.class)
+    public ResponseEntity<?> accountNotFoundException(AccountNotFoundException e){
+        return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(AccountIsDeactiveException.class)
+    public ResponseEntity<?> accountIsDeactiveException(AccountIsDeactiveException e){
+        return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_ACCEPTABLE);
+    }
+
+    @ExceptionHandler(BalanceNotEnoughException.class)
+    public ResponseEntity<?> balanceNotEnoughException(BalanceNotEnoughException e){
+        return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(FromAndDestinationAccountsAreSameException.class)
+    public ResponseEntity<?> fromAndDestinationAccountsAreSameException(
+            FromAndDestinationAccountsAreSameException e) {
+        return new ResponseEntity<>(e.getMessage(),HttpStatus.CONFLICT);
+    }
+
 }
