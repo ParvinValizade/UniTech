@@ -1,22 +1,17 @@
 package com.unitech.unitech.dto;
 
 
+import java.time.LocalDate;
+
 public class UserDto {
     private String id;
     private String firstName;
     private String lastName;
-    private String pin;
-    private String password;
+    private LocalDate birthDate;
+    private CityDto city;
+    private String address;
 
     public UserDto() {
-    }
-
-    public UserDto(String id, String firstName, String lastName, String pin, String password) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.pin = pin;
-        this.password = password;
     }
 
     public String getId() {
@@ -43,19 +38,27 @@ public class UserDto {
         this.lastName = lastName;
     }
 
-    public String getPin() {
-        return pin;
+    public LocalDate getBirthDate() {
+        return birthDate;
     }
 
-    public void setPin(String pin) {
-        this.pin = pin;
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
     }
 
-    public String getPassword() {
-        return password;
+    public CityDto getCity() {
+        return city;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setCity(CityDto city) {
+        this.city = city;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 }

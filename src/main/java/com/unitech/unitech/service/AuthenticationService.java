@@ -14,12 +14,17 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final JwtProvider jwtProvider;
 
-    public AuthenticationService(AuthenticationManager authenticationManager, JwtProvider jwtProvider) {
+    private final UserService userService;
+
+    public AuthenticationService(AuthenticationManager authenticationManager, JwtProvider jwtProvider, UserService userService) {
         this.authenticationManager = authenticationManager;
         this.jwtProvider = jwtProvider;
+        this.userService = userService;
     }
 
     public String singInAndReturnJWT(SignInRequest signInRequest){
+        userService.checkPinIsValidOrNot(signInRequest.getPin());
+        userService.checkPasswordIsValidOrNot(signInRequest.getPassword());
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(signInRequest.getPin(),signInRequest.getPassword())
         );

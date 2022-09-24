@@ -1,6 +1,6 @@
 package com.unitech.unitech.security;
 
-import com.unitech.unitech.dto.UserDto;
+import com.unitech.unitech.model.User;
 import com.unitech.unitech.service.UserService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,7 +19,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserDto user = userService.findUser(username);
+        User user = userService.findUserByPin(username);
         return new UserPrincipal(user.getId(),user.getPin(),user.getPassword());
     }
 }

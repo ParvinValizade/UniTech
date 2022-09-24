@@ -19,4 +19,14 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(PasswordDoesNotValidException.class)
+    public ResponseEntity<?> passwordDoesNotValidException(PasswordDoesNotValidException e){
+        return new ResponseEntity<>(e.getMessage(),HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(PinDoesNotValidException.class)
+    public ResponseEntity<?> pinDoesNotValidException(PinDoesNotValidException e){
+        return new ResponseEntity<>(e.getMessage(),HttpStatus.CONFLICT);
+    }
+
 }
