@@ -11,6 +11,7 @@ import com.unitech.unitech.model.AccountStatus;
 import com.unitech.unitech.model.User;
 import com.unitech.unitech.repository.AccountRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -55,6 +56,7 @@ public class AccountService {
         return converter.convert(accountList);
     }
 
+    @Transactional
     public String transferMoney(String fromAccountId,TransferDetailsRequest request){
         Account from = findAndCheckAccountActiveOrNot(fromAccountId);
         Account destination = findAndCheckAccountActiveOrNot(request.getDestinationAccountId());

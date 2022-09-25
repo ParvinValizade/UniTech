@@ -6,6 +6,7 @@ import com.unitech.unitech.dto.CityDto;
 import com.unitech.unitech.dto.UserDto;
 import com.unitech.unitech.dto.request.CreateAccountRequest;
 import com.unitech.unitech.dto.request.CreateUserRequest;
+import com.unitech.unitech.dto.request.TransferDetailsRequest;
 import com.unitech.unitech.model.Account;
 import com.unitech.unitech.model.AccountStatus;
 import com.unitech.unitech.model.City;
@@ -158,4 +159,70 @@ public class TestSupport {
                         AccountStatusDto.valueOf(account.getStatus().name())
                 )).collect(Collectors.toList());
     }
+
+    public Account generateDestinationAccount(User user){
+        return new Account(
+                "destinationAccount-id",
+                new BigDecimal(200),
+                LocalDateTime.now(),
+                AccountStatus.ACTIVE,
+                user
+        );
+    }
+
+    public TransferDetailsRequest generateTransferDetailsRequest(){
+        return new TransferDetailsRequest("destinationAccount-id",
+                new BigDecimal(70));
+    }
+
+    public TransferDetailsRequest generateTransferDetailsRequestWithSameAccountId(){
+        return new TransferDetailsRequest("account-id",
+                new BigDecimal(70));
+    }
+
+    public TransferDetailsRequest generateTransferDetailsRequestWithMoreMoneyThanBalance(){
+        return new TransferDetailsRequest("destinationAccount-id",
+                new BigDecimal(170));
+    }
+
+    public Account generateUpdatedFromAccount(Account fromAccount,BigDecimal amount){
+        return new Account(
+                fromAccount.getId(),
+                fromAccount.getBalance().subtract(amount),
+                fromAccount.getCreationDate(),
+                fromAccount.getStatus(),
+                fromAccount.getUserId()
+        );
+    }
+
+    public Account generateUpdatedDestinationAccount(Account destinationAccount,BigDecimal amount){
+        return new Account(
+                destinationAccount.getId(),
+                destinationAccount.getBalance().add(amount),
+                destinationAccount.getCreationDate(),
+                destinationAccount.getStatus(),
+                destinationAccount.getUserId()
+        );
+    }
+
+    public Account generateDeactiveAccount(User user){
+        return new Account(
+                "account-id",
+                new BigDecimal(100),
+                LocalDateTime.now(),
+                AccountStatus.DEACTIVE,
+                user
+        );
+    }
+
+    public Account generateDeactiveDestinationAccount(User user){
+        return new Account(
+                "destinationAccount-id",
+                new BigDecimal(100),
+                LocalDateTime.now(),
+                AccountStatus.DEACTIVE,
+                user
+        );
+    }
+
 }

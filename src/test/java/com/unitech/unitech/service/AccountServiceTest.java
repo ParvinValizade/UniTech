@@ -4,9 +4,9 @@ import com.unitech.unitech.TestSupport;
 import com.unitech.unitech.dto.AccountDto;
 import com.unitech.unitech.dto.converter.AccountToAccountDtoConverter;
 import com.unitech.unitech.dto.request.CreateAccountRequest;
+import com.unitech.unitech.dto.request.TransferDetailsRequest;
 import com.unitech.unitech.dto.request.UpdateAccountStatusRequest;
-import com.unitech.unitech.exception.AccountNotFoundException;
-import com.unitech.unitech.exception.UserNotFoundException;
+import com.unitech.unitech.exception.*;
 import com.unitech.unitech.model.Account;
 import com.unitech.unitech.model.AccountStatus;
 import com.unitech.unitech.model.User;
@@ -29,6 +29,8 @@ class AccountServiceTest extends TestSupport {
 
     private AccountService accountService;
 
+    private final User user = generateUser();
+
     @BeforeEach
     public void setUp(){
         repository = mock(AccountRepository.class);
@@ -40,7 +42,6 @@ class AccountServiceTest extends TestSupport {
 
     @Test
     void testCreateAccount_whenUserIsExist_itShouldCreateAccount(){
-        User user = generateUser();
         CreateAccountRequest request = generateCreateAccountRequest(user.getId());
         Account account = generateAccount(user);
         Account savedAccount = generateAccount(user);
@@ -78,7 +79,6 @@ class AccountServiceTest extends TestSupport {
 
     @Test
     void testUpdateAccountStatus_whenAccountIdIsExist_itShouldReturnAccountDto(){
-        User user = generateUser();
         Account account = generateAccount(user);
         Account updatedAccount = generateUpdatedAccount(account,user);
         AccountDto updatedAccountDto = generateUpdatedAccountDto(updatedAccount);
@@ -114,7 +114,6 @@ class AccountServiceTest extends TestSupport {
 
     @Test
     void testGetAllActiveAccountsOfUser_whenUserIdIsExist_itShouldReturnAccountDtoList(){
-        User user = generateUser();
         List<Account> accountList = generateAccountList(user);
         List<AccountDto> accountDtoList = generateAccountDtoList(accountList);
 
@@ -143,6 +142,158 @@ class AccountServiceTest extends TestSupport {
         verify(userService).findUserById(userId);
         verifyNoInteractions(repository);
         verifyNoInteractions(converter);
+    }
+
+    @Test
+    void testTransferMoney_whenEverythingIsOkay_itShouldReturnSuccessMessage(){
+        String fromAccountId = "account-id";
+        TransferDetailsRequest request = generateTransferDetailsRequest();
+        Account from = generateAccount(user);
+        Account destination = generateDestinationAccount(user);
+        Account fromAccount = generateUpdatedFromAccount(from,request.getAmount());
+        Account destinationAccount = generateUpdatedDestinationAccount(destination,request.getAmount());
+
+        String expectedSuccessMessage = "Transfer completed successfully";
+
+
+        when(repository.findById(fromAccountId)).thenReturn(Optional.of(from));
+        when(repository.findByIdAndStatusEquals(fromAccountId,AccountStatus.ACTIVE))
+                .thenReturn(Optional.of(from));
+        when(repository.findById(request.getDestinationAccountId())).thenReturn(Optional.of(destination));
+        when(repository.findByIdAndStatusEquals(request.getDestinationAccountId(),AccountStatus.ACTIVE))
+                .thenReturn(Optional.of(destination));
+        when(repository.save(from)).thenReturn(fromAccount);
+        when(repository.save(destination)).thenReturn(destinationAccount);
+
+        String result = accountService.transferMoney(fromAccountId,request);
+
+        assertEquals(expectedSuccessMessage,result);
+
+        verify(repository).findById(fromAccountId);
+        verify(repository).findByIdAndStatusEquals(fromAccountId,AccountStatus.ACTIVE);
+        verify(repository).findById(request.getDestinationAccountId());
+        verify(repository).findByIdAndStatusEquals(request.getDestinationAccountId(),AccountStatus.ACTIVE);
+        verify(repository).save(from);
+        verify(repository).save(destination);
+    }
+
+    @Test
+    void testTransferMoney_whenFromAccountIdDoesNotExist_itShouldThrowAccountNotFoundException(){
+        String fromAccountId = "account-id";
+        TransferDetailsRequest request = generateTransferDetailsRequest();
+
+
+        when(repository.findById(fromAccountId)).thenReturn(Optional.empty());
+
+        assertThrows(AccountNotFoundException.class,()->
+                accountService.transferMoney(fromAccountId,request));
+
+        verify(repository).findById(fromAccountId);
+        verifyNoMoreInteractions(repository);
+    }
+
+    @Test
+    void testTransferMoney_whenFromAccountIdIsExistButDoesNotActive_itShouldThrowAccountIsDeactiveException(){
+        String fromAccountId = "account-id";
+        TransferDetailsRequest request = generateTransferDetailsRequest();
+        Account deactiveAccount = generateDeactiveAccount(user);
+
+
+        when(repository.findById(fromAccountId)).thenReturn(Optional.of(deactiveAccount));
+
+        assertThrows(AccountIsDeactiveException.class,()->
+                accountService.transferMoney(fromAccountId,request));
+
+        verify(repository).findById(fromAccountId);
+        verify(repository).findByIdAndStatusEquals(fromAccountId,AccountStatus.ACTIVE);
+        verifyNoMoreInteractions(repository);
+    }
+
+    @Test
+    void testTransferMoney_whenFromAccountIdIsExistAndActiveButDestinationAccountNotFound_itShouldThrowAccountNotFoundException(){
+        String fromAccountId = "account-id";
+        TransferDetailsRequest request = generateTransferDetailsRequest();
+        Account fromAccount = generateAccount(user);
+
+
+        when(repository.findById(fromAccountId)).thenReturn(Optional.of(fromAccount));
+        when(repository.findByIdAndStatusEquals(fromAccountId,AccountStatus.ACTIVE))
+                .thenReturn(Optional.of(fromAccount));
+        when(repository.findById(request.getDestinationAccountId())).thenReturn(Optional.empty());
+
+        assertThrows(AccountNotFoundException.class,()->
+                accountService.transferMoney(fromAccountId,request));
+
+        verify(repository).findById(fromAccountId);
+        verify(repository).findByIdAndStatusEquals(fromAccountId,AccountStatus.ACTIVE);
+        verify(repository).findById(request.getDestinationAccountId());
+        verifyNoMoreInteractions(repository);
+    }
+
+    @Test
+    void testTransferMoney_whenDestinationAccountIdIsExistButDoesNotActive_itShouldThrowAccountIsDeactiveException(){
+        String fromAccountId = "account-id";
+        TransferDetailsRequest request = generateTransferDetailsRequest();
+        Account fromAccount = generateAccount(user);
+        Account deactiveAccount = generateDeactiveDestinationAccount(user);
+
+
+        when(repository.findById(fromAccountId)).thenReturn(Optional.of(fromAccount));
+        when(repository.findByIdAndStatusEquals(fromAccountId,AccountStatus.ACTIVE))
+                .thenReturn(Optional.of(fromAccount));
+        when(repository.findById(request.getDestinationAccountId())).thenReturn(Optional.of(deactiveAccount));
+
+        assertThrows(AccountIsDeactiveException.class,()->
+                accountService.transferMoney(fromAccountId,request));
+
+        verify(repository).findById(fromAccountId);
+        verify(repository).findByIdAndStatusEquals(fromAccountId,AccountStatus.ACTIVE);
+        verify(repository).findById(request.getDestinationAccountId());
+        verify(repository).findByIdAndStatusEquals(request.getDestinationAccountId(),AccountStatus.ACTIVE);
+        verifyNoMoreInteractions(repository);
+    }
+
+    @Test
+    void testTransferMoney_whenFromAndDestinationAccountsAreSame_itShouldThrowFromAndDestinationAccountsAreSameException(){
+        String fromAccountId = "account-id";
+        TransferDetailsRequest request = generateTransferDetailsRequestWithSameAccountId();
+        Account from = generateAccount(user);
+        Account destination = generateAccount(user);
+
+
+        when(repository.findById(fromAccountId)).thenReturn(Optional.of(from));
+        when(repository.findByIdAndStatusEquals(fromAccountId,AccountStatus.ACTIVE))
+                .thenReturn(Optional.of(from));
+        when(repository.findById(request.getDestinationAccountId())).thenReturn(Optional.of(destination));
+        when(repository.findByIdAndStatusEquals(request.getDestinationAccountId(),AccountStatus.ACTIVE))
+                .thenReturn(Optional.of(destination));
+
+        assertThrows(FromAndDestinationAccountsAreSameException.class,()->
+                accountService.transferMoney(fromAccountId,request));
+    }
+
+    @Test
+    void testTransferMoney_whenFromAccountBalanceNotEnough_itShouldThrowBalanceNotEnoughException(){
+        String fromAccountId = "account-id";
+        TransferDetailsRequest request = generateTransferDetailsRequestWithMoreMoneyThanBalance();
+        Account from = generateAccount(user);
+        Account destination = generateDestinationAccount(user);
+
+        when(repository.findById(fromAccountId)).thenReturn(Optional.of(from));
+        when(repository.findByIdAndStatusEquals(fromAccountId,AccountStatus.ACTIVE))
+                .thenReturn(Optional.of(from));
+        when(repository.findById(request.getDestinationAccountId())).thenReturn(Optional.of(destination));
+        when(repository.findByIdAndStatusEquals(request.getDestinationAccountId(),AccountStatus.ACTIVE))
+                .thenReturn(Optional.of(destination));
+
+        assertThrows(BalanceNotEnoughException.class,()->
+                accountService.transferMoney(fromAccountId,request));
+
+        verify(repository).findById(fromAccountId);
+        verify(repository).findByIdAndStatusEquals(fromAccountId,AccountStatus.ACTIVE);
+        verify(repository).findById(request.getDestinationAccountId());
+        verify(repository).findByIdAndStatusEquals(request.getDestinationAccountId(),AccountStatus.ACTIVE);
+        verifyNoMoreInteractions(repository);
     }
 
 }
