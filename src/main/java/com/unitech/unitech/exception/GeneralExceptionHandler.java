@@ -50,4 +50,9 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(e.getMessage(),HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(SymbolNotFoundException.class)
+    public ResponseEntity<?> symbolNotFoundExceptionHandler(SymbolNotFoundException exception){
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
 }
