@@ -14,6 +14,16 @@ public class UserDto {
     public UserDto() {
     }
 
+    public UserDto(String id, String firstName, String lastName,
+                   LocalDate birthDate, CityDto city, String address) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.birthDate = birthDate;
+        this.city = city;
+        this.address = address;
+    }
+
     public String getId() {
         return id;
     }

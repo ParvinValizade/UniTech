@@ -5,6 +5,7 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 public class Account {
@@ -80,5 +81,21 @@ public class Account {
 
     public void setUserId(User userId) {
         this.userId = userId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Account)) return false;
+        Account account = (Account) o;
+        return  getBalance().equals(account.getBalance())
+                && getStatus() == account.getStatus()
+                && getUserId().equals(account.getUserId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(
+                getBalance(),getStatus(), getUserId());
     }
 }

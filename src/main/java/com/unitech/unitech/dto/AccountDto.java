@@ -12,6 +12,14 @@ public class AccountDto {
     public AccountDto() {
     }
 
+    public AccountDto(String id, BigDecimal balance,
+                      LocalDateTime creationDate, AccountStatusDto status) {
+        this.id = id;
+        this.balance = balance;
+        this.creationDate = creationDate;
+        this.status = status;
+    }
+
     public String getId() {
         return id;
     }

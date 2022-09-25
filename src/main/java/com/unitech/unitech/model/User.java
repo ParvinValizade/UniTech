@@ -5,6 +5,7 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -135,5 +136,27 @@ public class User {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User)) return false;
+        User user = (User) o;
+        return  getFirstName().equals(user.getFirstName())
+                && getLastName().equals(user.getLastName())
+                && getBirthDate().equals(user.getBirthDate())
+                && getCity() == user.getCity()
+                && getAddress().equals(user.getAddress())
+                && getPin().equals(user.getPin())
+                && getPassword().equals(user.getPassword());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getFirstName(),
+                getLastName(), getBirthDate(),
+                getCity(), getAddress(), getPin(),
+                getPassword());
     }
 }
