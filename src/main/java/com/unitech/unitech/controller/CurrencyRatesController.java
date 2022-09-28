@@ -21,8 +21,8 @@ public class CurrencyRatesController {
         this.currencyRatesService = currencyRatesService;
     }
 
-    @GetMapping("/test")
-    @Operation(summary = "Test", security = @SecurityRequirement(name = "bearerAuth"))
+    @GetMapping("/getExchange")
+    @Operation(summary = "Currency Exchange", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<CurrencyExchangeDto> currencyRates(
                                                           @RequestParam Currency symbol,
                                                           @RequestParam Currency base){
