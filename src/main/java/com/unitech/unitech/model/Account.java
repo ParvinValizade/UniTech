@@ -1,11 +1,15 @@
 package com.unitech.unitech.model;
 
-import org.hibernate.annotations.GenericGenerator;
-
-import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 public class Account {

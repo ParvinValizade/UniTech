@@ -2,11 +2,18 @@ plugins {
     id 'org.springframework.boot' version '2.7.4'
     id 'io.spring.dependency-management' version '1.0.14.RELEASE'
     id 'java'
+    id 'jacoco'
+    id "org.sonarqube" version "3.3"
 }
 
 group = 'com.unitech'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
+
+jacoco {
+    toolVersion = "0.7.1.201405082137"
+    reportsDir = file("$buildDir/customJacocoReportDir")
+}
 
 repositories {
     mavenCentral()
@@ -19,7 +26,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '2.7.0'
     implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.kafka:spring-kafka'
     implementation group: 'org.springdoc',name: 'springdoc-openapi-ui',version: '1.6.9'
+//    implementation 'az.unibank.bos:common-lib:0.0.1'
     // https://mvnrepository.com/artifact/com.squareup.okhttp/okhttp
     implementation group: 'com.squareup.okhttp', name: 'okhttp', version: '2.7.5'
     testImplementation 'com.tngtech.archunit:archunit-junit5:0.14.1'
@@ -33,9 +42,18 @@ dependencies {
 
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.kafka:spring-kafka-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
+}
+
+
+jacocoTestReport {
+    reports {
+        xml.enabled false
+        csv.enabled false
+    }
 }
 
 tasks.named('test') {
